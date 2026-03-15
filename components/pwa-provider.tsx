@@ -95,7 +95,8 @@ function checkAndNotify(registration: ServiceWorkerRegistration | null) {
       const key = `${match.id}-${min}`
       if (notified.has(key)) continue
       const target = matchTime - min * 60 * 1000
-      if (now >= target - 60 * 1000 && now <= target + 60 * 1000) {
+      // Ventana de 3 min para no perder el aviso si el intervalo cae justo
+      if (now >= target - 90 * 1000 && now <= target + 90 * 1000) {
         const body = min === 60 ? 'El partido empieza en 1 hora.' : `El partido empieza en ${min} minutos.`
         if (registration?.showNotification) {
           registration.showNotification(title, {
@@ -138,7 +139,7 @@ export function PWAProvider() {
 
     const interval = setInterval(() => {
       checkAndNotify(regRef.current ?? null)
-    }, 5 * 60 * 1000)
+    }, 60 * 1000)
 
     return () => clearInterval(interval)
   }, [])
