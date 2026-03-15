@@ -49,12 +49,9 @@ export function useSavedMatches() {
     setSavedMatches((prev) => prev.filter((m) => m.id !== matchId))
   }, [])
 
-  const toggleMatch = useCallback((match: Match) => {
+  const addToCalendar = useCallback((match: Match) => {
     setSavedMatches((prev) => {
-      const exists = prev.some((m) => m.id === match.id)
-      if (exists) {
-        return prev.filter((m) => m.id !== match.id)
-      }
+      if (prev.some((m) => m.id === match.id)) return prev
       return [
         ...prev,
         {
@@ -66,7 +63,11 @@ export function useSavedMatches() {
     })
   }, [])
 
-  const isSaved = useCallback(
+  const removeFromCalendar = useCallback((matchId: string) => {
+    setSavedMatches((prev) => prev.filter((m) => m.id !== matchId))
+  }, [])
+
+  const isInCalendar = useCallback(
     (matchId: string) => savedMatches.some((m) => m.id === matchId),
     [savedMatches]
   )
@@ -83,8 +84,9 @@ export function useSavedMatches() {
     savedMatches,
     saveMatch,
     removeMatch,
-    toggleMatch,
-    isSaved,
+    addToCalendar,
+    removeFromCalendar,
+    isInCalendar,
     toggleReminder,
     isLoaded,
   }

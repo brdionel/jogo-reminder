@@ -74,10 +74,10 @@ export function NotificationSettings() {
         <h3 className="font-semibold">Recordatorios antes del partido</h3>
       </div>
       <p className="mt-1 text-sm text-muted-foreground">
-        Recibí notificaciones 30 min y/o 1 hora antes de cada partido guardado.
+        Recibí notificaciones 30 min y/o 1 hora antes de cada partido que agregues al calendario.
       </p>
       <p className="mt-2 text-xs text-amber-600 dark:text-amber-500">
-        Importante: guardá el partido con la estrella y dejá la app o pestaña abierta (puede estar en segundo plano). Si cerraste por completo el navegador, no se envían recordatorios.
+        Importante: agregá partidos con «Añadir al calendario» y dejá la app o pestaña abierta (puede estar en segundo plano). Si cerraste por completo el navegador, no se envían recordatorios.
       </p>
 
       <div className="mt-4 flex flex-wrap items-center gap-4">

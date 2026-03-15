@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Match, Team } from '@/lib/types'
+import { Match, Team, League } from '@/lib/types'
 import { MatchCard } from './match-card'
 import { useSavedMatches } from '@/hooks/use-saved-matches'
 import { Empty } from '@/components/ui/empty'
@@ -54,11 +54,12 @@ function formatDateLabel(dateStr: string): string {
 interface MatchListProps {
   matches: Match[]
   teams: Team[]
-  onRemove?: (id: string) => void
+  onEdit?: (match: Match) => void
+  onRemove?: (match: Match) => void
 }
 
-export function MatchList({ matches, teams, onRemove }: MatchListProps) {
-  const { isSaved, toggleMatch } = useSavedMatches()
+export function MatchList({ matches, teams, onEdit, onRemove }: MatchListProps) {
+  const { isInCalendar, addToCalendar, removeFromCalendar } = useSavedMatches()
   const [groupedMatches, setGroupedMatches] = useState<Record<string, Match[]> | null>(null)
 
   useEffect(() => {
@@ -83,12 +84,23 @@ export function MatchList({ matches, teams, onRemove }: MatchListProps) {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      {leagueNames.map((leagueName) => (
-        <section key={leagueName} className="overflow-hidden rounded border border-border bg-card shadow-sm">
-          {/* Cabecera por liga */}
-          <div className="bg-primary px-3 py-2">
-            <h2 className="text-sm font-bold uppercase tracking-wide text-primary-foreground">
+    <div className="flex flex-col gap-3">
+      {leagueNames.map((leagueName) => {
+        const firstMatch = groupedMatches[leagueName][0]
+        const league = typeof firstMatch?.league === 'object' ? (firstMatch.league as League) : null
+        const leagueLogo = league?.logo
+        return (
+        <section key={leagueName} className="overflow-hidden rounded-md border border-border bg-card">
+          {/* Cabecera por liga con logo */}
+          <div className="flex items-center gap-2 bg-primary/90 px-3 py-2">
+            {leagueLogo ? (
+              <img
+                src={leagueLogo}
+                alt=""
+                className="h-5 w-5 shrink-0 rounded object-contain bg-primary-foreground/10"
+              />
+            ) : null}
+            <h2 className="text-xs font-bold uppercase tracking-wider text-primary-foreground">
               {leagueName}
             </h2>
           </div>
@@ -99,9 +111,11 @@ export function MatchList({ matches, teams, onRemove }: MatchListProps) {
               <MatchCard
                 key={match.id}
                 match={match}
-                isSaved={isSaved(match.id)}
-                onToggleSave={() => toggleMatch(match)}
-                onRemove={onRemove ? () => onRemove(match.id) : undefined}
+                isInCalendar={isInCalendar(match.id)}
+                onAddToCalendar={() => addToCalendar(match)}
+                onRemoveFromCalendar={() => removeFromCalendar(match.id)}
+                onEdit={onEdit ? () => onEdit(match) : undefined}
+                onRemove={onRemove ? () => onRemove(match) : undefined}
                 dateLabel={formatDateLabel(match.date)}
                 homeTeamLogo={typeof match.homeTeam === 'object' ? match.homeTeam?.logo : undefined}
                 awayTeamLogo={typeof match.awayTeam === 'object' ? match.awayTeam?.logo : undefined}
@@ -109,7 +123,8 @@ export function MatchList({ matches, teams, onRemove }: MatchListProps) {
             ))}
           </div>
         </section>
-      ))}
+        )
+      })}
     </div>
   )
 }

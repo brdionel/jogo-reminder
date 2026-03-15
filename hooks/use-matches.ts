@@ -6,8 +6,10 @@ import { Match } from '@/lib/types'
 export function useMatches() {
   const [matches, setMatches] = useState<Match[]>([])
   const [isLoaded, setIsLoaded] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   const fetchMatches = useCallback(async (date?: string) => {
+    setIsLoading(true)
     try {
       const url = date ? `/api/matches?date=${date}` : '/api/matches'
       const response = await fetch(url)
@@ -17,12 +19,14 @@ export function useMatches() {
       }
     } catch (error) {
       console.error('Error fetching matches:', error)
+    } finally {
+      setIsLoading(false)
+      setIsLoaded(true)
     }
   }, [])
 
   useEffect(() => {
     fetchMatches()
-    setIsLoaded(true)
   }, [fetchMatches])
 
   const addMatch = useCallback(async (data: {
@@ -50,6 +54,26 @@ export function useMatches() {
     }
   }, [])
 
+  const updateMatch = useCallback(async (
+    id: string,
+    updates: { date?: string; time?: string; venue?: string }
+  ) => {
+    try {
+      const response = await fetch('/api/matches', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, ...updates }),
+      })
+      if (response.ok) {
+        const updated = await response.json()
+        setMatches(prev => prev.map(m => m.id === id ? updated : m))
+        return updated
+      }
+    } catch (error) {
+      console.error('Error updating match:', error)
+    }
+  }, [])
+
   const removeMatch = useCallback(async (id: string) => {
     try {
       const response = await fetch(`/api/matches?id=${id}`, {
@@ -64,5 +88,5 @@ export function useMatches() {
     }
   }, [])
 
-  return { matches, addMatch, removeMatch, isLoaded, fetchMatches }
+  return { matches, addMatch, updateMatch, removeMatch, isLoaded, isLoading, fetchMatches }
 }

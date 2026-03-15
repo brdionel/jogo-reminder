@@ -41,14 +41,14 @@ function addNotified(key: string) {
   } catch (_) {}
 }
 
-function getSavedMatches(): Array<{ id: string; date: string; time: string; homeTeam?: { name?: string }; awayTeam?: { name?: string }; reminder?: boolean }> {
+function getSavedMatches(): Array<{ id: string; date: string; time: string; homeTeam?: { name?: string; logo?: string }; awayTeam?: { name?: string; logo?: string }; reminder?: boolean }> {
   if (typeof window === 'undefined') return []
   try {
     const raw = localStorage.getItem(SAVED_KEY)
     if (!raw) return []
     const arr = JSON.parse(raw) as unknown[]
     return (Array.isArray(arr) ? arr : []).filter(
-      (m): m is { id: string; date: string; time: string; homeTeam?: { name?: string }; awayTeam?: { name?: string }; reminder?: boolean } =>
+      (m): m is { id: string; date: string; time: string; homeTeam?: { name?: string; logo?: string }; awayTeam?: { name?: string; logo?: string }; reminder?: boolean } =>
         m != null && typeof m === 'object' && 'id' in m && 'date' in m && 'time' in m
     )
   } catch (_) {
@@ -90,6 +90,10 @@ function checkAndNotify(registration: ServiceWorkerRegistration | null) {
     const home = match.homeTeam?.name ?? 'Local'
     const away = match.awayTeam?.name ?? 'Visitante'
     const title = `${home} vs ${away}`
+    const homeLogo = typeof match.homeTeam?.logo === 'string' && match.homeTeam.logo ? match.homeTeam.logo : undefined
+    const awayLogo = typeof match.awayTeam?.logo === 'string' && match.awayTeam.logo ? match.awayTeam.logo : undefined
+    const iconUrl = homeLogo || awayLogo || '/icon.png'
+    const imageUrl = awayLogo && awayLogo !== iconUrl ? awayLogo : homeLogo
 
     for (const min of minutes) {
       const key = `${match.id}-${min}`
@@ -98,22 +102,19 @@ function checkAndNotify(registration: ServiceWorkerRegistration | null) {
       // Ventana de 3 min para no perder el aviso si el intervalo cae justo
       if (now >= target - 90 * 1000 && now <= target + 90 * 1000) {
         const body = min === 60 ? 'El partido empieza en 1 hora.' : `El partido empieza en ${min} minutos.`
+        const opts: NotificationOptions = {
+          body,
+          icon: iconUrl,
+          tag: key,
+          requireInteraction: true,
+          silent: false,
+          vibrate: [200, 100, 200],
+        }
+        if (imageUrl) (opts as Record<string, unknown>).image = imageUrl
         if (registration?.showNotification) {
-          registration.showNotification(title, {
-            body,
-            icon: '/icon.png',
-            tag: key,
-            requireInteraction: true,
-            silent: false,
-            vibrate: [200, 100, 200],
-          })
+          registration.showNotification(title, opts)
         } else if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-          new Notification(title, {
-            body,
-            icon: '/icon.png',
-            tag: key,
-            requireInteraction: true,
-          })
+          new Notification(title, opts)
         }
         addNotified(key)
       }

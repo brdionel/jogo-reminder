@@ -53,6 +53,36 @@ export async function POST(request: NextRequest) {
   }
 }
 
+export async function PATCH(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const { id, date, time, venue } = body
+
+    if (!id) {
+      return NextResponse.json({ error: 'ID is required' }, { status: 400 })
+    }
+
+    const match = await prisma.match.update({
+      where: { id },
+      data: {
+        ...(date != null && { date }),
+        ...(time != null && { time }),
+        ...(venue !== undefined && { venue }),
+      },
+      include: {
+        homeTeam: { include: { league: true, country: true } },
+        awayTeam: { include: { league: true, country: true } },
+        league: { include: { country: true } },
+      },
+    })
+
+    return NextResponse.json(match)
+  } catch (error) {
+    console.error('Error updating match:', error)
+    return NextResponse.json({ error: 'Failed to update match' }, { status: 500 })
+  }
+}
+
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)

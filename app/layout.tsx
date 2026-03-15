@@ -1,18 +1,7 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter, Space_Grotesk } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { PWAProvider } from '@/components/pwa-provider'
 import './globals.css'
-
-const inter = Inter({ 
-  subsets: ["latin"],
-  variable: '--font-inter'
-});
-
-const spaceGrotesk = Space_Grotesk({ 
-  subsets: ["latin"],
-  variable: '--font-space-grotesk'
-});
 
 export const metadata: Metadata = {
   title: 'Mis Partidos - Tu Lista Personal de Partidos',
@@ -54,7 +43,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased`}>
+      <head>
+        <link href="https://fonts.cdnfonts.com/css/odisseia-test" rel="stylesheet" />
+      </head>
+      <body className="font-sans antialiased">
         {children}
         <PWAProvider />
         <Analytics />

@@ -27,6 +27,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import type { Country, League, Team } from '@/lib/types'
 
 export default function EquiposPage() {
@@ -470,17 +477,18 @@ function LeagueForm({
       />
       <div>
         <label className="mb-1.5 block text-sm font-medium text-foreground">País</label>
-        <select
-          className="h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
-          value={countryId}
-          onChange={(e) => setCountryId(e.target.value)}
-          required
-        >
-          <option value="">Seleccionar país</option>
-          {countries.map((c) => (
-            <option key={c.id} value={c.id}>{c.flag ? `${c.flag} ` : ''}{c.name}</option>
-          ))}
-        </select>
+        <Select value={countryId} onValueChange={setCountryId} required>
+          <SelectTrigger className="h-9 w-full bg-input text-foreground">
+            <SelectValue placeholder="Seleccionar país" />
+          </SelectTrigger>
+          <SelectContent className="bg-popover text-popover-foreground">
+            {countries.map((c) => (
+              <SelectItem key={c.id} value={c.id}>
+                {c.flag ? `${c.flag} ` : ''}{c.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       <div>
         <label className="mb-1.5 block text-sm font-medium text-foreground">Logo</label>
@@ -568,17 +576,18 @@ function TeamForm({
       />
       <div>
         <label className="mb-1.5 block text-sm font-medium text-foreground">Liga</label>
-        <select
-          className="h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
-          value={leagueId}
-          onChange={(e) => setLeagueId(e.target.value)}
-          required
-        >
-          <option value="">Seleccionar liga</option>
-          {leagues.map((l) => (
-            <option key={l.id} value={l.id}>{l.name}</option>
-          ))}
-        </select>
+        <Select value={leagueId} onValueChange={setLeagueId} required>
+          <SelectTrigger className="h-9 w-full bg-input text-foreground">
+            <SelectValue placeholder="Seleccionar liga" />
+          </SelectTrigger>
+          <SelectContent className="bg-popover text-popover-foreground">
+            {leagues.map((l) => (
+              <SelectItem key={l.id} value={l.id}>
+                {l.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       <div>
         <label className="mb-1.5 block text-sm font-medium text-foreground">Escudo</label>

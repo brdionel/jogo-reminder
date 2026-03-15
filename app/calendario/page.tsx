@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Header } from '@/components/header'
+import { NotificationSettings } from '@/components/notification-settings'
 import { useSavedMatches } from '@/hooks/use-saved-matches'
 import { downloadAllICS } from '@/lib/calendar'
 import { Button } from '@/components/ui/button'
@@ -58,8 +59,12 @@ export default function CalendarioPage() {
             Mi Calendario
           </h1>
           <p className="mt-2 text-muted-foreground">
-            Sincroniza tus partidos guardados con tu calendario favorito
+            Sincronizá los partidos que agregaste al calendario con tu app de calendario
           </p>
+        </div>
+
+        <div className="mb-8">
+          <NotificationSettings />
         </div>
 
         {savedMatches.length === 0 ? (
@@ -68,9 +73,9 @@ export default function CalendarioPage() {
               <Calendar className="h-8 w-8 text-muted-foreground" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-foreground">No tienes partidos guardados</h3>
+              <h3 className="text-lg font-semibold text-foreground">No tenés partidos en tu calendario</h3>
               <p className="mt-1 text-sm text-muted-foreground">
-                Guarda algunos partidos primero para crear tu calendario personal
+                Agregá partidos con «Añadir al calendario» para crear tu calendario y recibir recordatorios
               </p>
             </div>
           </div>

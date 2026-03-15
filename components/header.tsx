@@ -1,6 +1,6 @@
 'use client'
 
-import { Tv, Star, Calendar as CalendarIcon, Shield } from 'lucide-react'
+import { Tv, Calendar as CalendarIcon, Shield } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -10,7 +10,6 @@ export function Header() {
 
   const navItems = [
     { href: '/', label: 'Partidos', icon: Tv },
-    { href: '/guardados', label: 'Guardados', icon: Star },
     { href: '/calendario', label: 'Calendario', icon: CalendarIcon },
     { href: '/equipos', label: 'Equipos', icon: Shield },
   ]
