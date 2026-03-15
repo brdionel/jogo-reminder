@@ -45,12 +45,12 @@ export function NotificationSettings() {
       try {
         const reg = await navigator.serviceWorker.ready
         if (reg.showNotification) {
-          reg.showNotification(title, { body, icon: '/icon.svg', tag: 'test-notification' })
+          reg.showNotification(title, { body, icon: '/icon.png', tag: 'test-notification' })
           return
         }
       } catch (_) {}
     }
-    new Notification(title, { body, icon: '/icon.svg', tag: 'test-notification' })
+    new Notification(title, { body, icon: '/icon.png', tag: 'test-notification' })
   }
 
   if (!mounted) return null

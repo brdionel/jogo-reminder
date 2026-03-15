@@ -35,8 +35,8 @@ self.addEventListener('push', (event) => {
   const title = data.title || 'Mis Partidos'
   const options = {
     body: data.body || '',
-    icon: '/icon.svg',
-    badge: '/icon.svg',
+    icon: '/icon.png',
+    badge: '/icon.png',
     tag: data.tag || 'match-reminder',
     requireInteraction: false,
   }

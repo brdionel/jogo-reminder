@@ -98,9 +98,9 @@ function checkAndNotify(registration: ServiceWorkerRegistration | null) {
       if (now >= target - 60 * 1000 && now <= target + 60 * 1000) {
         const body = min === 60 ? 'El partido empieza en 1 hora.' : `El partido empieza en ${min} minutos.`
         if (registration?.showNotification) {
-          registration.showNotification(title, { body, icon: '/icon.svg', tag: key })
+          registration.showNotification(title, { body, icon: '/icon.png', tag: key })
         } else if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-          new Notification(title, { body, icon: '/icon.svg', tag: key })
+          new Notification(title, { body, icon: '/icon.png', tag: key })
         }
         addNotified(key)
       }
