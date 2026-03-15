@@ -7,13 +7,14 @@ import { useSavedMatches } from '@/hooks/use-saved-matches'
 import { Empty } from '@/components/ui/empty'
 import { CalendarX } from 'lucide-react'
 
-function groupMatchesByCompetition(matches: Match[]): Record<string, Match[]> {
+function groupMatchesByLeague(matches: Match[]): Record<string, Match[]> {
   const groups: Record<string, Match[]> = {}
 
   for (const match of matches) {
-    const competition = match.competition || 'Otros'
-    if (!groups[competition]) groups[competition] = []
-    groups[competition].push(match)
+    const leagueName =
+      (typeof match.league === 'object' && match.league?.name) ? match.league.name : 'Otros'
+    if (!groups[leagueName]) groups[leagueName] = []
+    groups[leagueName].push(match)
   }
 
   // Sort matches within each group by date and time
@@ -61,14 +62,17 @@ export function MatchList({ matches, teams, onRemove }: MatchListProps) {
   const [groupedMatches, setGroupedMatches] = useState<Record<string, Match[]> | null>(null)
 
   useEffect(() => {
-    setGroupedMatches(groupMatchesByCompetition(matches))
+    setGroupedMatches(groupMatchesByLeague(matches))
   }, [matches])
 
   if (!groupedMatches) return null
 
-  const competitions = Object.keys(groupedMatches)
+  // Ordenar ligas por nombre para que el orden sea estable
+  const leagueNames = Object.keys(groupedMatches).sort((a, b) =>
+    (a === 'Otros' ? 1 : 0) - (b === 'Otros' ? 1 : 0) || a.localeCompare(b)
+  )
 
-  if (competitions.length === 0) {
+  if (leagueNames.length === 0) {
     return (
       <Empty className="py-16">
         <CalendarX className="mx-auto mb-3 h-10 w-10 text-muted-foreground" />
@@ -80,18 +84,18 @@ export function MatchList({ matches, teams, onRemove }: MatchListProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      {competitions.map((competition) => (
-        <section key={competition} className="overflow-hidden rounded border border-border bg-card shadow-sm">
-          {/* Competition Header - Promiedos style */}
+      {leagueNames.map((leagueName) => (
+        <section key={leagueName} className="overflow-hidden rounded border border-border bg-card shadow-sm">
+          {/* Cabecera por liga */}
           <div className="bg-primary px-3 py-2">
             <h2 className="text-sm font-bold uppercase tracking-wide text-primary-foreground">
-              {competition}
+              {leagueName}
             </h2>
           </div>
 
-          {/* Matches Table */}
+          {/* Partidos de esta liga */}
           <div className="divide-y divide-border">
-            {groupedMatches[competition].map((match) => (
+            {groupedMatches[leagueName].map((match) => (
               <MatchCard
                 key={match.id}
                 match={match}

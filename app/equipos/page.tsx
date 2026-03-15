@@ -336,7 +336,8 @@ export default function EquiposPage() {
             onSuccess={() => setTeamModal('closed')}
             onSave={async (data) => {
               if (isTeamEdit && teamModal !== null && teamModal !== 'closed') {
-                await updateTeam(teamModal.id, { name: data.name, logo: data.logo })
+                await updateTeam(teamModal.id, { name: data.name, logo: data.logo, leagueId: data.leagueId })
+                fetchTeams()
               } else {
                 await createTeam(data)
               }

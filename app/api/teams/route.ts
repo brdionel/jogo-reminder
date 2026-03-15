@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json()
-    const { id, name, logo } = body
+    const { id, name, logo, leagueId } = body
 
     if (!id) {
       return NextResponse.json({ error: 'ID is required' }, { status: 400 })
@@ -51,7 +51,11 @@ export async function PATCH(request: NextRequest) {
 
     const team = await prisma.team.update({
       where: { id },
-      data: { ...(name != null && { name }), ...(logo != null && { logo }) },
+      data: {
+        ...(name != null && { name }),
+        ...(logo != null && { logo }),
+        ...(leagueId != null && { leagueId }),
+      },
       include: { league: true, country: true }
     })
 

@@ -49,7 +49,7 @@ export function useTeams() {
     return created ?? null
   }, [teams, createTeam])
 
-  const updateTeam = useCallback(async (id: string, updates: Partial<Pick<Team, 'name' | 'logo'>>) => {
+  const updateTeam = useCallback(async (id: string, updates: Partial<Pick<Team, 'name' | 'logo' | 'leagueId'>>) => {
     try {
       const response = await fetch('/api/teams', {
         method: 'PATCH',

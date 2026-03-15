@@ -38,7 +38,9 @@ self.addEventListener('push', (event) => {
     icon: '/icon.png',
     badge: '/icon.png',
     tag: data.tag || 'match-reminder',
-    requireInteraction: false,
+    requireInteraction: true,
+    silent: false,
+    vibrate: [200, 100, 200],
   }
   event.waitUntil(self.registration.showNotification(title, options))
 })

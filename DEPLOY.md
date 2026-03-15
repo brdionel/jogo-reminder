@@ -94,10 +94,32 @@ En **Vercel** SQLite no es viable porque el filesystem es efímero.
 
 ---
 
+## Si en Vercel tenés 500 con Supabase (Failed to fetch leagues, etc.)
+
+En serverless (Vercel) la **conexión directa** a Supabase (puerto 5432) suele fallar. Hay que usar el **Connection pooler** (puerto 6543) y decirle a Prisma que use PgBouncer.
+
+1. En **Supabase** → **Project Settings** → **Database**.
+2. Buscá **Connection string** y elegí **"Use connection pooling"** (modo **Transaction**).
+3. Copiá la URI: usa **puerto 6543** y un host tipo `aws-0-XX.pooler.supabase.com`.
+4. Al final de la URL agregá **`&pgbouncer=true`** (si ya tiene `?sslmode=require`, quedará algo como `?sslmode=require&pgbouncer=true`).
+5. En **Vercel** → **Settings** → **Environment Variables**: editá `DATABASE_URL` y pegá esta nueva URL. Guardá.
+6. **Redeploy** el proyecto (Deployments → ⋮ → Redeploy).
+
+Ejemplo de URL con pooler:
+
+```txt
+postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres?sslmode=require&pgbouncer=true
+```
+
+Con eso las rutas `/api/init`, `/api/leagues`, `/api/teams`, `/api/matches` deberían dejar de devolver 500.
+
+---
+
 ## Checklist rápido
 
 - [ ] Base PostgreSQL creada (Neon / Supabase / Vercel Postgres).
 - [ ] `DATABASE_URL` en `.env` o en las variables del proyecto en Vercel.
+- [ ] **Con Supabase en Vercel:** usar URL del **pooler** (puerto 6543) con **`&pgbouncer=true`**.
 - [ ] `prisma/schema.prisma` con `provider = "postgresql"` y `url = env("DATABASE_URL")`.
 - [ ] Ejecutado `npx prisma db push` (o `migrate deploy`) una vez contra esa URL.
 - [ ] Deploy en Vercel con `DATABASE_URL` configurada.
