@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Country {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  code      String? // ISO code
+  flag      String? // Emoji or URL
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  leagues League[]
+  teams   Team[]
+
+  @@map("countries")
+}
+
+model League {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  logo      String?
+  countryId String
+  country   Country  @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  teams   Team[]
+  matches Match[]
+
+  @@map("leagues")
+}
+
+model Team {
+  id        String   @id @default(cuid())
+  name      String
+  logo      String?
+  leagueId  String
+  league    League   @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  countryId String?
+  country   Country? @relation(fields: [countryId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  homeMatches Match[] @relation("HomeTeam")
+  awayMatches Match[] @relation("AwayTeam")
+
+  @@unique([name, leagueId])
+  @@map("teams")
+}
+
+model Match {
+  id          String   @id @default(cuid())
+  homeTeamId  String
+  homeTeam    Team     @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeamId  String
+  awayTeam    Team     @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  leagueId    String
+  league      League   @relation(fields: [leagueId], references: [id])
+  date        String // YYYY-MM-DD
+  time        String // HH:MM
+  venue       String?
+  status      String   @default("scheduled") // scheduled, live, finished
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("matches")
+}
